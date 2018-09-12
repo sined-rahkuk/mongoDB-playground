@@ -1,4 +1,7 @@
-const MongoClient = require('mongodb').MongoClient;
+const {
+    MongoClient,
+    ObjectId
+} = require('mongodb');
 const assert = require('assert');
 const random = require('random-name');
 
@@ -13,14 +16,23 @@ MongoClient.connect(url, {
     useNewUrlParser: true
 }).then((result) => {
     console.log("i've successfully connected to the db");
-
-
+    let i = 1;
+    // ObjectId("5b97f0e48e5e380cfc452b75")
     result
         .db(db_name)
         .collection('my_documents')
-        .find({})
-        .count()
-        .then(res => console.log(res));
+        .findOneAndUpdate({
+            name: "Dela"
+        }, {
+            $rename: {
+                'age': 'old'
+            }
+        }, {
+            returnOriginal: false
+        })
+        .then(res => console.log(res))
+        .catch(err => console.error(err));
+
 
     result.close();
 }).catch((err) => {
