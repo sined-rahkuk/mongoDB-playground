@@ -15,8 +15,8 @@ const User = mongoose.model('User', {
     },
     tel: {
         type: Number,
-        min: 5,
-        max: 15
+        min: 100000,
+        max: 999999999999
     },
     date_of_birth: {
         type: Date,
