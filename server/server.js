@@ -30,6 +30,7 @@ app
 
     })
     .get('/todos', (req, res) => {
+        console.log(new Date(), 'GET', req.route.path);
         Todo.find()
             .then(
                 todos => res.send({
@@ -39,10 +40,11 @@ app
                 err => res.status(400).send(err));
     })
     .get('/todos/:id', (req, res) => {
-        let usr_id = req.params.id;
+        let todo_id = req.params.id;
+        console.log(new Date(), 'GET', req.route.path, todo_id);
 
-        if (ObjectID.isValid(usr_id)) {
-            Todo.findById(usr_id)
+        if (ObjectID.isValid(todo_id)) {
+            Todo.findById(todo_id)
                 .then(
                     usr => res.send({
                         usr
@@ -69,6 +71,20 @@ app
         User.find()
             .then(users => res.send(users).status(200),
                 err => res.send(err).status(400));
-        console.log('GET', req.route.path);
+        console.log(new Date(), 'GET', req.route.path);
+    })
+    .get('/users/:id', (req, res) => {
+        let usr_id = req.params.id;
+        console.log(new Date(), 'GET', req.route.path, usr_id);
+
+        if (ObjectID.isValid(usr_id)) {
+            User.findById(usr_id)
+                .then(
+                    usr => res.send({
+                        usr
+                    }).status(200),
+                    err => res.status(400).send(err))
+        } else res.status(404).send();
+
     })
     .listen(3000, () => console.log('server is up on port 3000'))
