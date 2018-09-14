@@ -1,5 +1,7 @@
+const ObjectID = require('mongodb').ObjectID;
 const express = require('express');
 const bodyParser = require('body-parser');
+
 
 const {
     mongoose
@@ -36,8 +38,21 @@ app
                 }),
                 err => res.status(400).send(err));
     })
+    .get('/todos/:id', (req, res) => {
+        let usr_id = req.params.id;
+
+        if (ObjectID.isValid(usr_id)) {
+            Todo.findById(usr_id)
+                .then(
+                    usr => res.send({
+                        usr
+                    }).status(200),
+                    err => res.status(400).send(err))
+        } else res.status(404).send();
+
+    })
     .post('/users', (req, res) => {
-        
+
         let newUser = User({
             last_name: req.body.last_name,
             first_name: req.body.first_name,
