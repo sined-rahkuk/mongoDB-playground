@@ -15,8 +15,8 @@ const {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 app
+    .use(express.static(__dirname + '/pages'))
     .use(bodyParser.json())
     .post('/todos', (req, res) => {
         console.log(req.body);
@@ -87,5 +87,10 @@ app
                     err => res.status(400).send(err))
         } else res.status(404).send();
 
+    })
+    .get('/', (req, res) => {
+        res.sendFile('welcome.html', {
+            root: './server/pages'
+        });
     })
     .listen(PORT, () => console.log(`server is up on port ${PORT}`));
