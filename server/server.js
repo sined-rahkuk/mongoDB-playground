@@ -19,7 +19,7 @@ app
     .use(express.static(__dirname + '/pages'))
     .use(bodyParser.json())
     .post('/todos', (req, res) => {
-        console.log(req.body);
+        console.log(new Date(), 'POST', req.route.path);
         let myTodo = new Todo({
             text: req.body.text
         });
@@ -55,7 +55,7 @@ app
 
     })
     .post('/users', (req, res) => {
-
+        console.log(new Date(), 'POST', req.route.path);
         let newUser = User({
             last_name: req.body.last_name,
             first_name: req.body.first_name,
@@ -86,6 +86,21 @@ app
                     }).status(200),
                     err => res.status(400).send(err))
         } else res.status(404).send();
+
+    })
+    .delete('/users/:id', (req, res) => {
+        let usr_id = req.params.id;
+        console.log(new Date(), 'DEL', req.route.path, usr_id);
+
+        if (ObjectID.isValid(usr_id)) {
+            User.findByIdAndRemove(usr_id)
+                .then(
+                    usr => {
+                        if (usr) res.status(200).send(usr)
+                        else res.status(404).send("User was't found!");
+                    },
+                    err => res.status(400).send(err));
+        } else res.status(404).send('ID IS NOT VALID');
 
     })
     .get('/', (req, res) => {
