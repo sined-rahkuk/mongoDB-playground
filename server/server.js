@@ -14,6 +14,7 @@ const {
 } = require('./models/user');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app
     .use(bodyParser.json())
@@ -87,4 +88,4 @@ app
         } else res.status(404).send();
 
     })
-    .listen(3000, () => console.log('server is up on port 3000'))
+    .listen(PORT, () => console.log(`server is up on port ${PORT}`));
