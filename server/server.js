@@ -37,7 +37,6 @@ app
             .then(
                 todos => res.send({
                     todos,
-                    customCode: 123
                 }),
                 err => res.status(400).send(err));
     })
@@ -90,7 +89,7 @@ app
         console.log(new Date(), 'DEL', req.route.path, todo_id);
 
         if (ObjectID.isValid(todo_id)) {
-            User.findByIdAndRemove(todo_id)
+            Todo.findByIdAndRemove(todo_id)
                 .then(
                     todo => {
                         if (todo) res.status(200).send(todo)
@@ -102,26 +101,36 @@ app
     })
     .post('/users', (req, res) => {
         console.log(new Date(), 'POST', req.route.path);
-        let newUser = User({
-            last_name: req.body.last_name,
-            first_name: req.body.first_name,
-            tel: req.body.tel
-            // date_of_birth: (req.body.date_of_birth) ? req.body.date_of_birth : 0
-        });
-        newUser.save()
-            .then(
-                doc => res.send(doc).status(200),
-                err => res.send(err).status(400));
+        const props = [
+            'email',
+            'password',
+            'last_name',
+            'first_name',
+            'tel',
+            'date_of_birth',
+
+        ];
+
+        let usr_body = _.pick(req.body, props);
+        let newUser = User(usr_body);
+        newUser
+            .save()
+            .then(usr => usr.generateAuthToken())
+            .then(token => res
+                .header('x-auth', token)
+                .send(newUser)
+                .status(200))
+            .catch(err => res.send(err).status(400));
     })
-    // .patch('/users/:id', (req, resp) => {
-    //     console.log(new Date(), 'GET', req.route.path, usr_id);
-    //     let body = _.pick(req.body, [])
-    // })
     .get('/users', (req, res) => {
 
         User.find()
-            .then(users => res.send(users).status(200),
-                err => res.send(err).status(400));
+            .then(users => res
+                .send(users)
+                .status(200),
+                err => res
+                .send(err)
+                .status(400));
         console.log(new Date(), 'GET', req.route.path);
     })
     .get('/users/:id', (req, res) => {
@@ -131,9 +140,13 @@ app
         if (ObjectID.isValid(usr_id)) {
             User.findById(usr_id)
                 .then(
-                    usr => res.send({
-                        usr
-                    }).status(200),
+                    usr => {
+                        if (usr)
+                            res.send({
+                                usr
+                            }).status(200)
+                        else res.status(400).send()
+                    },
                     err => res.status(400).send(err))
         } else res.status(404).send();
 
