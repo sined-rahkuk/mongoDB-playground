@@ -13,6 +13,7 @@ const {
 const {
     User
 } = require('./models/user');
+const authenticate = require('./middleware/authenticate.js').authenticate;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -132,6 +133,9 @@ app
                 .send(err)
                 .status(400));
         console.log(new Date(), 'GET', req.route.path);
+    })
+    .get('/users/me', authenticate, (req, res) => {
+        res.status(200).send(req.user);
     })
     .get('/users/:id', (req, res) => {
         let usr_id = req.params.id;
